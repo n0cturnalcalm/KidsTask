@@ -1,5 +1,29 @@
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+
 public class Teacher extends User{
     String teacherName;
+    ArrayList<Child> studentsList = new ArrayList<Child>();
+
+    public Teacher(String name){
+        teacherName = name;
+    }
+
+    void addTask(String title, String description, boolean type, LocalDateTime date_time, int reward, int experience, int rating, int status) {
+        Task task = new Task(title, description, type, date_time, reward, experience, rating, status, this);
+        Main.notCompletedTasks.add(task);
+    }
+
+    void approveTask(Task task, int rating) {
+        if(task.givenBy instanceof Teacher){
+            Main.ApprovedTasks.add(task);
+            Main.CompletedTasks.remove(task);
+            task.status = 2;
+            task.rating = rating;
+        }else {
+            System.out.println("You can't approve this task");
+        }
+    }
 
     void listTasks() {
         for (Task task : Main.notCompletedTasks) {
@@ -17,36 +41,14 @@ public class Teacher extends User{
                 System.out.println("there is no approved task");
             }
             System.out.println("Appr: " + task.taskTitle);
-        }for (Task task: Main.RejectedTasks) {
-            if (task == null) {
-                System.out.println("there is no rejected task");
-            }
-            System.out.println("Rej: " + task.taskTitle);
         }
     }
-    void listWishes() {}
-    void giveExtraPoints(Child child) {}
-    void addTask() {}
-    void approveTask(Task task, int rating) {
-        if(task.givenBy instanceof Teacher){
-            Main.ApprovedTasks.add(task);
-            Main.CompletedTasks.remove(task);
-            task.status = 2;
-            task.rating = rating;
-        }else {
-            System.out.println("You can't approve this task");
-        }
-    }
-    void rejectTask(Task task) {
-        if (task.givenBy instanceof Teacher){
-            Main.RejectedTasks.add(task);
-            Main.CompletedTasks.remove(task);
-            task.status = -1;
 
-            task.rating = 0;
-        }else {
-            System.out.println("You can't reject this task");
-        }
+    void addStudent(Child student){
+        this.studentsList.add(student);
     }
-    void rateTask() {}
+
+    void giveExtraPoints(Child child, int amount) {
+        child.childPoints += amount;
+    }
 }
