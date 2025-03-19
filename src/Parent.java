@@ -55,12 +55,24 @@ public class Parent extends User{
         child.childPoints += amount;
     }
 
-    void addTask(String title, String description, boolean type, LocalDateTime date_time, int reward, int experience, int rating, int status) {
-        Task task = new Task(title, description, type, date_time, reward, experience, rating, status, this);
+    void addTask(int id, String title, String description, boolean type, LocalDateTime date_time, int reward, int experience, int rating, int status) {
+        Task task = new Task(id, title, description, type, date_time, reward, experience, rating, status, this);
         Main.notCompletedTasks.add(task);
     }
 
-    void approveTask(Task task, int rating) {
+    void approveTask(int taskID, int rating) {
+        Task task = null;
+
+        for (Task task1: Main.CompletedTasks) {
+            if (task1.taskId == taskID) {
+                task = task1;
+            }else continue;
+        }
+
+        if (task == null){
+            System.out.println("Task not found");
+            return;
+        }
         if(task.givenBy instanceof Teacher){
             Main.ApprovedTasks.add(task);
             Main.CompletedTasks.remove(task);

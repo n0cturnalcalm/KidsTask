@@ -61,16 +61,38 @@ public class Child extends User{
         this.childOf = parent;
     }
 
-    void completeTask(Task task) {
+    void completeTask(int taskID) {
+        Task task = null;
+
+        for (Task task1: Main.notCompletedTasks) {
+            if (task1.taskId == taskID) {
+                task = task1;
+            }else continue;
+        }
+
+        if (task == null){
+            System.out.println("Task not found");
+            return;
+        }
+
         Main.CompletedTasks.add(task);
         Main.notCompletedTasks.remove(task);
         task.status = 1;
 
         this.childPoints += task.reward;
         this.experience += task.experience;
-        if (this.experience >= 100) {
-            this.childLevel += 1;
-            this.experience = 0;
+        updateLevel();
+    }
+
+    void updateLevel(){
+        if (0 <= this.experience && this.experience < 40){
+            this.childLevel = 1;
+        }else if (40 <= this.experience && this.experience < 60){
+            this.childLevel = 2;
+        }else if (60 <= this.experience && this.experience < 80){
+            this.childLevel = 3;
+        }else if (80 <= this.experience){
+            this.childLevel = 4;
         }
     }
 }

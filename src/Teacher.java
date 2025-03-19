@@ -9,8 +9,8 @@ public class Teacher extends User{
         teacherName = name;
     }
 
-    void addTask(String title, String description, boolean type, LocalDateTime date_time, int reward, int experience, int rating, int status) {
-        Task task = new Task(title, description, type, date_time, reward, experience, rating, status, this);
+    void addTask(int id, String title, String description, boolean type, LocalDateTime date_time, int reward, int experience, int rating, int status) {
+        Task task = new Task(id, title, description, type, date_time, reward, experience, rating, status, this);
         Main.notCompletedTasks.add(task);
     }
 
