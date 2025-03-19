@@ -12,10 +12,60 @@ public class Parent extends User{
         this.childList.add(child);
     }
 
-    void approveWish(Wish wish) {
+    void approveWish(String wishID) {
+        Wish wish = null;
+        for (Wish wish1: Main.requestedWishes) {
+            if (wish1.wishId.equals(wishID)) {
+                wish = wish1;
+            }else continue;
+        }
+
+        if (wish == null){
+            System.out.println("Wish not found");
+            return;
+        }
+        
         Main.approvedWishes.add(wish);
         Main.requestedWishes.remove(wish);
         wish.status = 1;
+    }
+
+    void approveWish(String wishID, int levelRestriction) {
+        Wish wish = null;
+        for (Wish wish1: Main.requestedWishes) {
+            if (wish1.wishId.equals(wishID)) {
+                wish = wish1;
+            }else continue;
+        }
+
+        if (wish == null){
+            System.out.println("Wish not found");
+            return;
+        }
+
+        Main.approvedWishes.add(wish);
+        Main.requestedWishes.remove(wish);
+        wish.status = 1;
+        wish.levelRestriction = levelRestriction;
+    }
+
+
+
+    void rejectWish(String wishID) {
+        Wish wish = null;
+        for (Wish wish1: Main.requestedWishes) {
+            if (wish1.wishId.equals(wishID)) {
+                wish = wish1;
+            }else continue;
+        }
+
+        if (wish == null){
+            System.out.println("Wish not found");
+            return;
+        }
+
+        Main.requestedWishes.remove(wish);
+        wish.status = -1;
     }
 
     void listTasks() {
@@ -77,6 +127,7 @@ public class Parent extends User{
             Main.ApprovedTasks.add(task);
             Main.CompletedTasks.remove(task);
             task.status = 2;
+            Main.billy.taskCount++;
             task.rating = rating;
         }else {
             System.out.println("You can't approve this task");

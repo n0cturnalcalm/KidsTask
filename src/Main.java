@@ -10,8 +10,8 @@ public class Main {
     public static ArrayList<Task> CompletedTasks = new ArrayList<Task>();
     public static ArrayList<Task> ApprovedTasks = new ArrayList<Task>();
 
-    public static ArrayList<Wish> requestedWishes;
-    public static ArrayList<Wish> approvedWishes;
+    public static ArrayList<Wish> requestedWishes = new ArrayList<Wish>();
+    public static ArrayList<Wish> approvedWishes = new ArrayList<Wish>();
 
     public static Parent anna = new Parent("Anna");
     public static Teacher jack =new Teacher("Jack");
@@ -203,14 +203,82 @@ public class Main {
                 anna.approveTask(taskId, 5);
 
             } else if (input.length() >= 8 && input.substring(0, 8).equals("ADD_WISH")) {
+                String command;
+                boolean type = Boolean.parseBoolean(null);
+                String wishId;
+                String wishTitle;
+                String wishDescription;
+                LocalDateTime dateTime = null;
+
+                String[] parsedInput = input.split(" ", 3);
+                command = parsedInput[0];
+                if (command.charAt(8) == 1) {
+                    type = false;
+                } else if (command.charAt(8) == 2) {
+                    type = true;
+                }
+
+                String remainingCommand = parsedInput[2];
+
+                int indexQ1 = remainingCommand.indexOf("\"");
+                wishId = remainingCommand.substring(0, indexQ1).trim();
+                int indexQ2 = remainingCommand.indexOf("\"", indexQ1 + 1);
+                wishTitle = remainingCommand.substring(indexQ1 + 1, indexQ2).trim();
+                int indexQ3 = remainingCommand.indexOf("\"", indexQ2 + 1);
+                int indexQ4 = remainingCommand.indexOf("\"", indexQ3 + 1);
+                wishDescription = remainingCommand.substring(indexQ3 + 1, indexQ4).trim();
+
+                if (type == true){
+                    String[] remainingCommand2 = remainingCommand.substring(indexQ4 + 1).trim().split(" ");
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                    dateTime = LocalDateTime.parse(remainingCommand2[0] + " " + remainingCommand2[1], formatter);
+                }
+                System.out.println("Parsed Input Length: " + parsedInput.length);
+                System.out.println("Parsed Input: " + Arrays.toString(parsedInput));
+
+                if (key == 'c') {
+                    billy.requestWish(wishId, wishTitle, wishDescription, type, dateTime);
+                } else {
+                    System.out.println("You are not authorized to add a task!");
+                }
 
             } else if (input.length() >= 15 && input.substring(0, 15).equals("ADD_BUDGET_COIN")) {
+                int amount = Integer.parseInt(input.substring(16));
+                System.out.println("extra points given " + amount);
+                anna.giveExtraPoints(billy, amount);
 
             } else if (input.length() >= 12 && input.substring(0, 12).equals("WISH_CHECKED")) {
+                System.out.println("wish 101 checked");
+                Integer levelRes = null;
+                String[] parsedInput = input.split(" ");
+                String wishId = parsedInput[1];
+                String result = parsedInput[2];
+                if (!parsedInput[3].isEmpty()){
+                    levelRes = Integer.parseInt(parsedInput[3]);
+                }
+
+                if (result.equals("APPROVED")) {
+                    if (levelRes != null){
+                        anna.approveWish(wishId, levelRes);
+                    } else{
+                        anna.approveWish(wishId);
+                    }
+                } else if (result.equals("REJECTED")) {
+                    anna.rejectWish(wishId);
+                }
 
             } else if (input.length() >= 12 && input.substring(0, 12).equals("PRINT_BUDGET")) {
+                System.out.println("Billy's points: " + billy.childPoints);
 
             } else if (input.length() >= 12 && input.substring(0, 12).equals("PRINT_STATUS")) {
+                System.out.println("Billy's level: " + billy.childLevel);
+                System.out.println("Billy's experience: " + billy.experience);
+                System.out.println("Billy's points: " + billy.childPoints);
+                System.out.println("Succesful Tasks: " + billy.taskCount);
+
+
+            } else {
+                System.out.println("Invalid command!");
 
             }
         }

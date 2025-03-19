@@ -7,6 +7,7 @@ public class Child extends User{
     int childLevel;
     Parent childOf;
     Teacher studentOf;
+    int taskCount = 0;
 
     public Child(String name, int id){
         childName = name;
@@ -15,8 +16,8 @@ public class Child extends User{
         childLevel = 1;
     }
 
-    void requestWish(String title, String description, boolean type, LocalDateTime date_time, int price, int levelRestriction) {
-        Wish wish = new Wish(title, description, type, date_time, price, levelRestriction);
+    void requestWish(String id, String title, String description, boolean type, LocalDateTime date_time) {
+        Wish wish = new Wish(id, title, description, type, date_time);
         Main.requestedWishes.add(wish);
     }
 
@@ -25,7 +26,7 @@ public class Child extends User{
             if (wish == null) {
                 System.out.println("there is no wish");
             }
-            System.out.println("Wish: " + wish.wishTitle);
+            System.out.println("RequestedWish: " + wish.wishTitle);
         }for (Wish wish: Main.approvedWishes) {
             if (wish == null) {
                 System.out.println("there is no approved wish");
