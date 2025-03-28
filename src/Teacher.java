@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
 public class Teacher extends User{
@@ -74,6 +75,23 @@ public class Teacher extends User{
         }
     }
 
+    void listTasksFiltered(char filter) {
+        System.out.println("Filtered Tasks (" + filter + "):");
+
+        for (Task task : Main.notCompletedTasks) {
+            if (task == null) continue;
+
+            LocalDateTime taskDate = task.taskDateTime;
+
+            if (filter == 'D' && taskDate.toLocalDate().isEqual(LocalDateTime.now().toLocalDate())) {
+                System.out.println("NotComp: " + task.taskTitle + " | " + taskDate);
+            }
+            else if (filter == 'W' && taskDate.isAfter(LocalDateTime.now().minus(7, ChronoUnit.DAYS))) {
+                System.out.println("NotComp: " + task.taskTitle + " | " + taskDate);
+            }
+        }
+    }
+
     void addStudent(Child student){
         this.studentsList.add(student);
     }
@@ -82,4 +100,37 @@ public class Teacher extends User{
         child.childPoints += amount;
         child.updateLevel();
     }
+
+    void updateTasksFile() {
+        try (FileWriter writer = new FileWriter("E:\\Uni\\KidsTask\\src\\Tasks.txt")) {
+            for (Task task : Main.notCompletedTasks) {
+                writer.write("TASK#" + task.taskId + "#" + task.taskTitle + "#" + task.taskDescription + "#" + task.taskType + "#" + task.taskDateTime + "#" + task.taskPoints + "#" + task.rating + "#" + task.status + "#" + task.givenBy + "\n");
+            }
+            for (Task task : Main.CompletedTasks) {
+                writer.write("TASK#" + task.taskId + "#" + task.taskTitle + "#" + task.taskDescription + "#" + task.taskType + "#" + task.taskDateTime + "#" + task.taskPoints + "#" + task.rating + "#" + task.status + "#" + task.givenBy + "\n");
+            }
+            for (Task task : Main.ApprovedTasks) {
+                writer.write("TASK#" + task.taskId + "#" + task.taskTitle + "#" + task.taskDescription + "#" + task.taskType + "#" + task.taskDateTime + "#" + task.taskPoints + "#" + task.rating + "#" + task.status + "#" + task.givenBy + "\n");
+            }
+            for (Task task : Main.PassedTasks) {
+                writer.write("TASK#" + task.taskId + "#" + task.taskTitle + "#" + task.taskDescription + "#" + task.taskType + "#" + task.taskDateTime + "#" + task.taskPoints + "#" + task.rating + "#" + task.status + "#" + task.givenBy + "\n");
+            }
+        } catch (Exception e) {
+            System.out.println("An error occurred" + e.getMessage());
+        }
+    }
+
+    void updateWishesFile() {
+        try (FileWriter writer = new FileWriter("E:\\Uni\\KidsTask\\src\\WishList.txt")) {
+            for (Wish wish : Main.requestedWishes) {
+                writer.write("WISH#" + wish.wishId + "#" + wish.wishTitle + "#" + wish.wishDescription + "#" + wish.wishType + "#" + wish.wishDateTime + "#" + wish.wishPoints + "\n");
+            }
+            for (Wish wish : Main.approvedWishes) {
+                writer.write("WISH#" + wish.wishId + "#" + wish.wishTitle + "#" + wish.wishDescription + "#" + wish.wishType + "#" + wish.wishDateTime + "#" + wish.wishPoints + "\n");
+            }
+        } catch (Exception e) {
+            System.out.println("An error occurred" + e.getMessage());
+        }
+    }
+
 }

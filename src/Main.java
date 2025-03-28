@@ -153,6 +153,11 @@ public class Main {
             }
 
             if (input.equals("exit")) {
+                System.out.println("Files are uptating...");
+                jack.updateTasksFile();
+                jack.updateWishesFile();
+                System.out.println("Files are updated");
+                System.out.println("Exiting...");
                 break;
             }
 
