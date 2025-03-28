@@ -1,3 +1,7 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -9,6 +13,7 @@ public class Main {
     public static ArrayList<Task> notCompletedTasks = new ArrayList<Task>();
     public static ArrayList<Task> CompletedTasks = new ArrayList<Task>();
     public static ArrayList<Task> ApprovedTasks = new ArrayList<Task>();
+    public static ArrayList<Task> PassedTasks = new ArrayList<Task>();
 
     public static ArrayList<Wish> requestedWishes = new ArrayList<Wish>();
     public static ArrayList<Wish> approvedWishes = new ArrayList<Wish>();
@@ -110,7 +115,9 @@ public class Main {
 //
 //        System.out.println("Tasks after adding new ones:");
 //        billy.listTasks();}
-        char key;
+
+
+        /* char key;
 
         System.out.print("Username: (anna, jack, billy) ");
         Scanner scanner = new Scanner(System.in);
@@ -126,10 +133,24 @@ public class Main {
             System.out.println("Welcome Billy, The Child!");
             key = 'c';
         }else
-            key = 'c';
+            key = 'c'; */
+
+        char key = 'a'; // 'a' for all
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader("E:\\Uni\\KidsTask\\src\\Commands.txt"));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         while (true) {
-            System.out.print("> ");
-            String input = scanner.nextLine();
+            //System.out.print("> ");
+            //String input = scanner.nextLine();
+            String input = null;
+            try {
+                input = reader.readLine();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
             if (input.equals("exit")) {
                 break;
@@ -178,10 +199,10 @@ public class Main {
                 reward = Integer.parseInt(remainingCommand2[2]);
                 experience = (int) (reward * 0.6);
 
-                if (key == 'p') {
-                    anna.addTask(taskId, taskTitle, taskDescription, type, dateTime, reward, experience, 0, 0);
-                } else if (key == 't') {
-                    jack.addTask(taskId, taskTitle, taskDescription, type, dateTime, reward, experience, 0, 0);
+                if (key == 'p' || key == 'a') {
+                    anna.addTask(taskId, taskTitle, taskDescription, type, dateTime, reward, 0, 0);
+                } else if (key == 't' || key == 'a') {
+                    jack.addTask(taskId, taskTitle, taskDescription, type, dateTime, reward, 0, 0);
                 } else {
                     System.out.println("You are not authorized to add a task!");
                 }
@@ -236,7 +257,7 @@ public class Main {
                 System.out.println("Parsed Input Length: " + parsedInput.length);
                 System.out.println("Parsed Input: " + Arrays.toString(parsedInput));
 
-                if (key == 'c') {
+                if (key == 'c' || key == 'a') {
                     billy.requestWish(wishId, wishTitle, wishDescription, type, dateTime);
                 } else {
                     System.out.println("You are not authorized to add a task!");
@@ -261,7 +282,7 @@ public class Main {
                     if (levelRes != null){
                         anna.approveWish(wishId, levelRes);
                     } else{
-                        anna.approveWish(wishId);
+                        anna.approveWish(wishId, 45);
                     }
                 } else if (result.equals("REJECTED")) {
                     anna.rejectWish(wishId);
@@ -272,7 +293,6 @@ public class Main {
 
             } else if (input.length() >= 12 && input.substring(0, 12).equals("PRINT_STATUS")) {
                 System.out.println("Billy's level: " + billy.childLevel);
-                System.out.println("Billy's experience: " + billy.experience);
                 System.out.println("Billy's points: " + billy.childPoints);
                 System.out.println("Succesful Tasks: " + billy.taskCount);
 
@@ -282,6 +302,5 @@ public class Main {
 
             }
         }
-
     }
 }

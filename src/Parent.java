@@ -1,3 +1,5 @@
+import java.io.FileWriter;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 public class Parent extends User{
@@ -12,7 +14,7 @@ public class Parent extends User{
         this.childList.add(child);
     }
 
-    void approveWish(String wishID) {
+    void approveWish(String wishID, int wishPoints) { // without level restriction
         Wish wish = null;
         for (Wish wish1: Main.requestedWishes) {
             if (wish1.wishId.equals(wishID)) {
@@ -24,13 +26,13 @@ public class Parent extends User{
             System.out.println("Wish not found");
             return;
         }
-        
+        wish.wishPoints = wishPoints;
         Main.approvedWishes.add(wish);
         Main.requestedWishes.remove(wish);
         wish.status = 1;
     }
 
-    void approveWish(String wishID, int levelRestriction) {
+    void approveWish(String wishID, int levelRestriction, int wishPoints) { // with level restriction
         Wish wish = null;
         for (Wish wish1: Main.requestedWishes) {
             if (wish1.wishId.equals(wishID)) {
@@ -42,14 +44,12 @@ public class Parent extends User{
             System.out.println("Wish not found");
             return;
         }
-
+        wish.wishPoints = wishPoints;
         Main.approvedWishes.add(wish);
         Main.requestedWishes.remove(wish);
         wish.status = 1;
         wish.levelRestriction = levelRestriction;
     }
-
-
 
     void rejectWish(String wishID) {
         Wish wish = null;
@@ -72,8 +72,16 @@ public class Parent extends User{
         for (Task task : Main.notCompletedTasks) {
             if (task == null) {
                 System.out.println("all tasks are completed");
+                break;
             }
-            System.out.println("NotComp: " + task.taskTitle);
+            if (task.taskDateTime.isBefore(LocalDateTime.now())){
+                System.out.println("FAILURE!! Task has expired. Passed Task Id and Title: " + task.taskId + task.taskTitle);
+                Main.PassedTasks.add(task);
+                Main.notCompletedTasks.remove(task);
+            }else {
+                System.out.println("NotComp: " + task.taskTitle);
+            }
+
         }for (Task task: Main.CompletedTasks) {
             if (task == null) {
                 System.out.println("there is no completed task");
@@ -91,23 +99,45 @@ public class Parent extends User{
         for (Wish wish : Main.requestedWishes) {
             if (wish == null) {
                 System.out.println("there is no wish");
+                break;
             }
-            System.out.println("Wish: " + wish.wishTitle);
+
+            if (wish.wishDateTime.isBefore(LocalDateTime.now())) {
+                System.out.println("FAILURE!! Wish has expired. Passed Wish Id and Title: " + wish.wishId + wish.wishTitle);
+                Main.requestedWishes.remove(wish);
+            } else {
+                System.out.println("Req Wish: " + wish.wishTitle);
+            }
+
         }for (Wish wish: Main.approvedWishes) {
             if (wish == null) {
                 System.out.println("there is no approved wish");
+                break;
             }
-            System.out.println("Appr: " + wish.wishTitle);
+
+            if (wish.wishDateTime.isBefore(LocalDateTime.now())) {
+                System.out.println("FAILURE!! Wish has expired. Passed Wish Id and Title: " + wish.wishId + wish.wishTitle);
+                Main.approvedWishes.remove(wish);
+            } else {
+                System.out.println("Appr Wish: " + wish.wishTitle + "Lvl Res: " + wish.levelRestriction);
+            }
         }
     }
 
     void giveExtraPoints(Child child, int amount) {
         child.childPoints += amount;
+        child.updateLevel();
     }
 
-    void addTask(int id, String title, String description, boolean type, LocalDateTime date_time, int reward, int experience, int rating, int status) {
-        Task task = new Task(id, title, description, type, date_time, reward, experience, rating, status, this);
+    void addTask(int id, String title, String description, boolean type, LocalDateTime date_time, int reward, int rating, int status) {
+        Task task = new Task(id, title, description, type, date_time, reward, status, this);
         Main.notCompletedTasks.add(task);
+
+        try (FileWriter writer = new FileWriter("E:\\Uni\\KidsTask\\src\\Tasks.txt")) {
+            writer.write("TASK#" + task.taskId + "#" + task.taskTitle + "#" + task.taskDescription + "#" + task.taskType + "#" + task.taskDateTime + "#" + task.taskPoints + "#" + task.rating + "#" + task.status + "#" + this + "\n");
+        }catch (Exception e) {
+            System.out.println("An error occurred" + e.getMessage());
+        }
     }
 
     void approveTask(int taskID, int rating) {
@@ -123,7 +153,7 @@ public class Parent extends User{
             System.out.println("Task not found");
             return;
         }
-        if(task.givenBy instanceof Teacher){
+        if(task.givenBy instanceof Parent){
             Main.ApprovedTasks.add(task);
             Main.CompletedTasks.remove(task);
             task.status = 2;
